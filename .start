@@ -1,0 +1,23 @@
+rs() {
+	python manage.py runserver
+}
+
+dj() {
+	python manage.py "$@"
+}
+
+env() {
+	source .env/bin/activate
+}
+
+makem() {
+	python manage.py makemigrations
+}
+
+migrate() {
+	python manage.py migrate
+}
+
+freeze(){
+	pip freeze > requirements.txt
+}
