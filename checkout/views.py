@@ -3,13 +3,13 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.conf import settings
 
-import stripe
-import json
-
-from bag.contexts import bag_contents
-from products.models import Product
 from .forms import OrderForm
 from .models import Order, OrderLineItem
+from products.models import Product
+from bag.contexts import bag_contents
+
+import stripe
+import json
 
 
 @require_POST
@@ -49,7 +49,11 @@ def checkout(request):
         }
         order_form = OrderForm(form_data)
         if order_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False)
+            pid = request.POST.get('client_secret').split('_secret')[0]
+            order.stripe_pid = pid
+            order.original_bag = json.dumps(bag)
+            order.save()
             for item_id, item_data in bag.items():
                 try:
                     product = Product.objects.get(id=item_id)
@@ -71,8 +75,7 @@ def checkout(request):
                             order_line_item.save()
                 except Product.DoesNotExist:
                     messages.error(request, (
-                        "One of the products in your bag wasn't found in our \
-                            database. "
+                        "One of the products in your bag wasn't found in our database. "
                         "Please call us for assistance!")
                     )
                     order.delete()
