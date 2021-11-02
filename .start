@@ -1,9 +1,9 @@
 rs() {
-	python manage.py runserver
+	python3 manage.py runserver
 }
 
 dj() {
-	python manage.py "$@"
+	python3 manage.py "$@"
 }
 
 env() {
@@ -11,13 +11,17 @@ env() {
 }
 
 makem() {
-	python manage.py makemigrations
+	python3 manage.py makemigrations
 }
 
 migrate() {
-	python manage.py migrate
+	python3 manage.py migrate
 }
 
 freeze(){
 	pip freeze > requirements.txt
+}
+
+pm() {
+	python3 manage.py
 }
